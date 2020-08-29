@@ -2,19 +2,17 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ArticlesController extends AbstractController
 {
     /**
-     * @Route("/articles", name="articles")
+     * @Route("/", name="articles")
      */
-    public function index()
+    public function index(): Response
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ArticlesController.php',
-        ]);
+        return $this->render('Articles/index.html.twig');
     }
 }
