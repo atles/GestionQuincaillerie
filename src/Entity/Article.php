@@ -48,6 +48,12 @@ class Article
      */
     private $quincaillerie;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=categorie::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $categorie;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +127,18 @@ class Article
     public function setQuincaillerie(?quincaillerie $quincaillerie): self
     {
         $this->quincaillerie = $quincaillerie;
+
+        return $this;
+    }
+
+    public function getCategorie(): ?categorie
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?categorie $categorie): self
+    {
+        $this->categorie = $categorie;
 
         return $this;
     }
