@@ -1,0 +1,42 @@
+{% extends "base.html.twig" %}
+{% block body %}
+
+          <table>
+            <th>ID</th>
+            <th>Libelle</th>
+            <th>Code</th>
+            <th>email</th>
+            <th>telephone</th>
+            <th>adresse</th>
+            <th>ville</th>
+            <th>region</th>
+            <th>longetude</th>
+            <th>latitude</th>
+            <th>Supression</th>
+            <th>Modification</th>
+            <th>Clonage</th>
+            
+            {% for prod in prods %}
+            <tr>
+              <td><label for="box">{{ prod.id}}</label></td> 
+              <td>{{ prod.libellequic}}</td>
+              <td>{{ prod.codequinc}}</td>
+              <td>{{ prod.email}}</td>
+              <td>{{ prod.tel}}</td>
+              <td>{{ prod.adresse}}</td>
+              <td>{{ prod.ville}}</td>
+              <td>{{ prod.region}}</td>
+              <td>{{ prod.longe}}</td>
+              <td>{{ prod.lat}}</td>
+              <td><a href={{path("app_quinc_supQuinc", {"id":prod.id})}} onclick="return confirm('êtes-vous sùre de vouloir supprimer ce produit ?')"> Supprimer </a></td>
+              <td><a href={{path("app_quinc_modQuinc", {"id":prod.id, "lib":prod.libellequic, "code":prod.codequinc,
+                "email":prod.email, "tel":prod.tel, "adresse":prod.adresse, "ville":prod.ville, 
+                "region":prod.region, "long":prod.longe, "lat":prod.lat})}}>Modifier</a></td>
+              <td><a href={{path("app_quinc_cloneQuinc", {"id":prod.id})}} > Cloner </a></td>
+            </tr>
+          {% endfor %}
+            
+          
+    </table>
+    
+{% endblock %}

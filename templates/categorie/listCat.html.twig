@@ -1,0 +1,24 @@
+{% extends "base.html.twig" %}
+{% block body %}
+
+          <table>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Libelle</th>
+            <th>Categorie</th>
+            <th>Description</th>
+            
+            {% for prod in prods %}
+            <tr>
+              <td>{{ prod.id}}</td> 
+              <td>{{ prod.codecategorie}}</td>
+              <td>{{ prod.libelle}}</td>
+              <td>{{ prod.categorie.getLibelle()}}</td>
+              <td>{{ prod.description}}</td>
+            </tr>
+          {% endfor %}
+            
+          
+    </table>
+    
+{% endblock %}
