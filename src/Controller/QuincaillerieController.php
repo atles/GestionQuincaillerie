@@ -10,122 +10,122 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class QuincaillerieController extends AbstractController
 {
     /**
-     * @Route("/quinc/addQuinc", name="app_quinc_addQuinc", methods="GET|POST" )     
+     * @Route("/quincaillerie/all", name="quincaillerie_all",methods={"GET"})
+     * @param Requeste $requeste
+     * @return JsonResponse
      */
-    public function addQuinc(Request $request, EntityManagerInterface $em) 
-    { 
-        $form = $this->createFormBuilder()
-            ->add('libelle', TextType::class)
-            ->add('Code', TextType::class)
-            ->add('email', TextType::class)
-            ->add('telephone', TextType::class)
-            ->add('adresse', TextType::class)
-            ->add('ville', TextType::class)
-            ->add('region', TextType::class)
-            ->add('longetude', TextType::class)
-            ->add('latitude', TextType::class)
-            ->add('submit', SubmitType::class, ['label'=>'Valider'])
-            ->getForm()
-        ; 
-        //dd($form);
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
-          //  dd($request->request->all());
-          $data = $form->getData();
-         // dd($data);
-          $prod = new Quincaillerie;
-          $prod->setLibellequic($data['libelle']);
-          $prod->setCodequinc($data['Code']);
-          $prod->setEmail($data['email']);
-          $prod->setTel($data['telephone']);
-          $prod->setAdresse($data['adresse']);
-          $prod->setVille($data['ville']);
-          $prod->setRegion($data['region']);
-          $prod->setLonge($data['longetude']);
-          $prod->setLat($data['latitude']);
-          $em->persist($prod);
-          $em->flush();
-          return $this->redirectToRoute('app_quinc_listQuinc');
+    public function getAll(QuincaillerieRepository $rep,EntityManagerInterface $emi)
+    {
+        $data = $rep->findAll();
+        // return $this->json($data);
+        $dataclection = array();
+        foreach($data as $item){
+            $dataclection[] = array(
+                'id' => $item->getId(),
+                'libellequic' => $item->getLibellequic(),
+                'codequinc' => $item->getCodequinc(),
+                'tel' => $item->getTel(),
+                'email' => $item->getEmail(),
+                'adresse' => $item->getAdresse(),
+                'ville' => $item->getVille(),
+                'region' => $item->getRegion(),
+                'lat' => $item->getLat(),
+                'long' => $item->getLonge()
+            );
         }
-        return $this->render('quincaillerie/addQuinc.html.twig', 
-            ['forms' =>$form->createView()]);
+        return new JsonResponse($dataclection);
     }
      /**
-     * @Route("/quinc/listQuinc", name="app_quinc_listQuinc", methods="GET|POST" )     
+      * @Route("/quincaillerie/{id<[0-9]+>}", name="quincaillerie_one", methods={"GET"})
+      * @param Requeste $requeste
+      * @return JsonResponse
      */
-    public function listQuinc(QuincaillerieRepository $qr) 
-    { 
-        return $this->render('quincaillerie/listQuinc.html.twig', ['prods'=> $qr->findAll()]);
-    }
-    /**
-     * @Route("/quinc/supQuinc/{id}", name="app_quinc_supQuinc", methods="GET|POST" )     
-     */
-    public function SupQuinc(QuincaillerieRepository $qr, $id, EntityManagerInterface $em) 
-    { 
-        $prod = $qr->find($id);
-       // dd($prod);
-        $em -> remove($prod);
-        $em->flush();
-        return $this->render('quincaillerie/listQuinc.html.twig', ['prods'=> $qr->findAll()]);
+    public function getOne(int $id, QuincaillerieRepository $rep)
+    {
+        // dd("dgfhjkl");
+        $data = $rep->find($id);
+        // return $this->json($data);
+        $dataclection = array(
+            'id' => $data->getId(),
+            'libellequic' => $data->getLibellequic(),
+            'codequinc' => $data->getCodequinc(),
+            'tel' => $data->getTel(),
+            'email' => $data->getEmail(),
+            'adresse' => $data->getAdresse(),
+            'ville' => $data->getVille(),
+            'region' => $data->getRegion(),
+            'lat' => $data->getLat(),
+            'long' => $data->getLonge()
+        );
+        return new JsonResponse($dataclection);
     }
      /**
-     * @Route("/quinc/modQuinc/{id}/{lib}/{code}/{email}/{tel}/{adresse}/{ville}/{region}/{long}}/{lat}", name="app_quinc_modQuinc", methods="GET|POST" )     
+     * @Route("/quincaillerie/add", name="quincaillerie_add", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
      */
-    public function ModProduit(Request $request, QuincaillerieRepository $qr, $id, EntityManagerInterface $em, 
-        $lib, $code, $email, $tel, $adresse, $ville, $region, $long, $lat) 
-    { 
-        $tab = ['libelle'=>$lib, 'Code'=>$code, 'email'=>$email, 'telephone'=>$tel, 'adresse'=>$adresse, 
-        'ville'=>$ville, 'region'=>$region, 'longetude'=>$long, 'latitude'=>$lat];
-        $form = $this->createFormBuilder($tab)
-            ->add('libelle', TextType::class)
-            ->add('Code', TextType::class)
-            ->add('email', TextType::class)
-            ->add('telephone', TextType::class)
-            ->add('adresse', TextType::class)
-            ->add('ville', TextType::class)
-            ->add('region', TextType::class)
-            ->add('longetude', TextType::class)
-            ->add('latitude', TextType::class)
-            ->add('submit', SubmitType::class, ['label'=>'Valider'])
-            ->getForm()
-        ; 
-        //dd($form);
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
-          //  dd($request->request->all());
-            $data = $form->getData();
-            $prod = $qr->find($id);
-            $prod->setLibellequic($data['libelle']);
-            $prod->setCodequinc($data['Code']);
-            $prod->setEmail($data['email']);
-            $prod->setTel($data['telephone']);
-            $prod->setAdresse($data['adresse']);
-            $prod->setVille($data['ville']);
-            $prod->setRegion($data['region']);
-            $prod->setLonge($data['longetude']);
-            $prod->setLat($data['latitude']);
-            $em->merge($prod);
-            $em->flush();
-            return $this->render('quincaillerie/listQuinc.html.twig', ['prods'=> $qr->findAll()]);
-        }
-        return $this->render('quincaillerie/addQuinc.html.twig', 
-            ['forms' =>$form->createView()]);
+    public function add(Request $request,QuincaillerieRepository $rep,EntityManagerInterface $emi) : JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+        $quincaillerie = new Quincaillerie;
+        // dd("gdfgdfg");
+        $quincaillerie->setLibellequic($data['libellequic']);
+        $quincaillerie->setCodequinc($data['codequinc']);
+        $quincaillerie->setTel($data['tel']);
+        $quincaillerie->setEmail($data['email']);
+        $quincaillerie->setAdresse($data['adresse']);
+        $quincaillerie->setVille($data['ville']);
+        $quincaillerie->setRegion($data['region']);
+        $quincaillerie->setLat($data['lat']);
+        $quincaillerie->setLonge($data['long']);
+        $emi->persist($quincaillerie);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Quincaillerie created'], Response::HTTP_CREATED);
     }
-    /**
-     * @Route("/quinc/cloneQuinc/{id}", name="app_quinc_cloneQuinc", methods="GET|POST" )     
+     /**
+     * @Route("/quincaillerie/update/{id<[0-9]+>}", name="quincaillerie_update", methods={"PUT"})
+     * @param Requeste $requeste
+     * @return JsonResponse
      */
-    public function CloneQuinc(Request $request, QuincaillerieRepository $qr, EntityManagerInterface $em,
-        $id) 
-    { 
-        $prod = $qr->find($id);
-        $copy = clone $prod;
-        $em->persist($copy);
-        $em->flush();
-        return $this->render('quincaillerie/listQuinc.html.twig', ['prods'=> $qr->findAll()]);
-        
+    public function update(int $id, Request $request,QuincaillerieRepository $rep,
+                           EntityManagerInterface $emi) : JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $quincaillerie = $rep->find($id);
+        // dd("gdfgdfg");
+        $quincaillerie->setLibellequic($data['libellequic']);
+        $quincaillerie->setCodequinc($data['codequinc']);
+        $quincaillerie->setTel($data['tel']);
+        $quincaillerie->setEmail($data['email']);
+        $quincaillerie->setAdresse($data['adresse']);
+        $quincaillerie->setVille($data['ville']);
+        $quincaillerie->setRegion($data['region']);
+        $quincaillerie->setLat($data['lat']);
+        $quincaillerie->setLonge($data['long']);
+        $emi->persist($quincaillerie);
+        $emi->flush();
+        return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
+    }
+     /**
+     * @Route("/quincaillerie/delete/{id<[0-9]+>}", name="quincaillerie_delete", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function delete( int $id, Request $request,QuincaillerieRepository $rep,
+                            EntityManagerInterface $emi)
+    {
+        $quincaillerie = $rep->find($id);
+        // dd($quincaillerie);
+        $emi->remove($quincaillerie);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Suppression de '.$quincaillerie->getid()], Response::HTTP_CREATED);
     }
 }

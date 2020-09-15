@@ -5,18 +5,21 @@ namespace App\Controller;
 use App\Entity\Categorie;
 use App\Entity\Quincaillerie;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class ArticlesController extends AbstractController
 {
    
    /**
-     * @Route("/", name="app_article_addArticle", methods="GET|POST" )     
+     * @Route("/article", name="app_article_addArticle", methods="GET|POST" )     
      */
-    /* public function addArticle(Request $request, EntityManagerInterface $em) 
+     /*public function addArticle(Request $request, EntityManagerInterface $em) 
     { 
         $form = $this->createFormBuilder()
             ->add('libelle', TextType::class)
@@ -48,5 +51,5 @@ class ArticlesController extends AbstractController
         }
         return $this->render('procat/addCat.html.twig', 
             ['forms' =>$form->createView()]);
-    } */
+    }*/ 
 }

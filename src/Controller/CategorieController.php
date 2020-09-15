@@ -28,29 +28,21 @@ class CategorieController extends AbstractController
      */
     public function addCat(Request $request, EntityManagerInterface $em) 
     { 
-        $form = $this->createFormBuilder()
-            ->add('Code', TextType::class)
-            ->add('libelle', TextType::class)
-            ->add('categorie', EntityType::class, array(
+        $cat = new Categorie;
+        $form = $this->createFormBuilder($cat)
+            ->add('codecategorie')
+            ->add('libelle')
+            ->add('categorie',null, array(
                 'class' => 'App:Categorie',
                 'choice_label' => 'libelle',
             ))
-            ->add('description', TextType::class)
-            ->add('submit', SubmitType::class, ['label'=>'Valider'])
+            ->add('description')
             ->getForm()
         ; 
-        //dd($form);
+        // dd($cat);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
-          //  dd($request->request->all());
-          $data = $form->getData();
-         // dd($data);
-          $prod = new Categorie;
-          $prod->setCodecategorie($data['Code']);
-          $prod->setLibelle($data['libelle']);
-          $prod->setCategorie($data['categorie']);
-          $prod->setDescription($data['description']);
-          $em->persist($prod);
+          $em->persist($cat);
           $em->flush();
           return $this->redirectToRoute('app_cat_addCat');
         }

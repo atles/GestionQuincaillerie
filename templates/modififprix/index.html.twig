@@ -1,8 +1,10 @@
 {% extends "base.html.twig" %}
 {% block body %}
-    {{ form_start(forms) }}
+    <h1>Hello {{ controller_name }}! ✅</h1>
+    {#{ form_start(forms) }}
         {{ form_widget(forms) }}
         <input type="submit" value="Valide" />
-    {{ form_end(forms) }}
+    {{ form_end(forms) }#}
     {#{form (forms)}#}
 {% endblock %}
+
