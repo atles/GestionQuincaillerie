@@ -11,11 +11,13 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class CategorieController extends AbstractController
 {
     /**
-     * @Route("/cat", name="app_cat")
+     * @Route("/catategorie", name="categorie")
      */
     public function index()
     {
@@ -24,36 +26,100 @@ class CategorieController extends AbstractController
         ]);
     }
     /**
-     * @Route("/cat/addCat", name="app_cat_addCat", methods="GET|POST" )     
+     * @Route("/categorie/all", name="article_all", methods={"GET"})
+     * @param Requeste $requeste
+     * @return JsonResponse
      */
-    public function addCat(Request $request, EntityManagerInterface $em) 
-    { 
-        $cat = new Categorie;
-        $form = $this->createFormBuilder($cat)
-            ->add('codecategorie')
-            ->add('libelle')
-            ->add('categorie',null, array(
-                'class' => 'App:Categorie',
-                'choice_label' => 'libelle',
-            ))
-            ->add('description')
-            ->getForm()
-        ; 
-        // dd($cat);
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
-          $em->persist($cat);
-          $em->flush();
-          return $this->redirectToRoute('app_cat_addCat');
+    public function getAll(CategorieRepository $rep){
+        $data = $rep->findAll();
+        $dataclection = array();
+        foreach($data as $item){
+            $dataclection[] = array(
+                "id" => $item->getId(),
+                "codecategorie" => $item->getCodecategorie(),
+                "libelle" => $item->getLibelle(),
+                "categorie" => array(
+                    "id" => $item->getCategorie()->getId(),
+                    "codecategorie" => $item->getCategorie()->getCodecategorie(),
+                    "liebelle" => $item->getCategorie()->getLibelle(),
+                    "categorie" => $item->getCategorie()->getCategorie(),
+                    "description" => $item->getCategorie()->getDescription()
+                ),
+                "description" => $item->getDescription()
+            );
         }
-        return $this->render('categorie/addCat.html.twig', 
-            ['forms' =>$form->createView()]);
+        return new JsonResponse($dataclection);
     }
-     /**
-     * @Route("/cat/listCat", name="app_cat_listCat", methods="GET|POST" )     
+    /**
+     * @Route("/categorie/{id<[0-9]+>}", name="article_one", methods={"GET"})
+     * @param Requeste $requeste
+     * @return JsonResponse
      */
-    public function listCat(CategorieRepository $cr) 
-    { 
-        return $this->render('categorie/listCat.html.twig', ['prods'=> $cr->findAll()]);
+    public function getOne(int $id,CategorieRepository $rep){
+        
+        $data = $rep->find($id);
+        $dataclection = array(
+            "id" => $data->getId(),
+            "codecategorie" => $data->getCodecategorie(),
+            "libelle" => $data->getLibelle(),
+            "categorie" => array(
+                "id" => $data->getCategorie()->getId(),
+                "codecategorie" => $data->getCategorie()->getCodecategorie(),
+                "liebelle" => $data->getCategorie()->getLibelle(),
+                "categorie" => $data->getCategorie()->getCategorie(),
+                "description" => $data->getCategorie()->getDescription()
+            ),
+            "description" => $data->getDescription()
+        );
+        return new JsonResponse($dataclection);
+    }
+    /**
+     * @Route("/categorie/add", name="article_add", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function add(CategorieRepository $rep,EntityManagerInterface $emi,Request $request):JsonResponse{
+
+        $data = json_decode($request->getContent(), true);
+        $categorie = new Categorie;
+        $cat = $rep->find($data['categorie']);
+        $categorie->setCodecategorie($data['codecategorie']);
+        $categorie->setLibelle($data['libelle']);
+        $categorie->setCategorie($cat);
+        $categorie->setDescription($data['description']);
+        $emi->persist($categorie);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Categorie created'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/categorie/update/{id<[0-9]+>}", name="article_update", methods={"PUT"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function update(CategorieRepository $rep, EntityManagerInterface $emi,
+                            Request $request, int $id):JsonResponse{
+
+        $data = json_decode($request->getContent(), true);
+        $categorie = $rep->find($id);
+        $cat = $rep->find($data['categorie']);
+        $categorie->setCodecategorie($data['codecategorie']);
+        $categorie->setLibelle($data['libelle']);
+        $categorie->setCategorie($cat);
+        $categorie->setDescription($data['description']);
+        $emi->persist($categorie);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Categorie modifier'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/categorie/delete/{id<[0-9]+>}", name="article_delete", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function delete(CategorieRepository $rep,EntityManagerInterface $emi, int $id):JsonResponse{
+       
+        $categorie = $rep->find($id);
+        $emi->remove($categorie);
+        $emi->flush();
+        return new JsonResponse(['status'=>'categorie supprimer'], Response::HTTP_CREATED);
     }
 }

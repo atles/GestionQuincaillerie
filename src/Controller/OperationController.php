@@ -244,7 +244,7 @@ class OperationController extends AbstractController
 
     }
      /**
-     * @Route("/operation/add", name="operation_add", methods={"POST","GET"})
+     * @Route("/operation/add", name="operation_add", methods={"POST"})
      * @param Requeste $requeste
      * @return JsonResponse
      */

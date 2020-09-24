@@ -95,7 +95,7 @@ class UserController extends AbstractController
         return new JsonResponse($dataclection);
     }
      /**
-     * @Route("/user/add", name="user_add", methods={"GET"})
+     * @Route("/user/add", name="user_add", methods={"POST"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -105,7 +105,6 @@ class UserController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
         $user = new User;
-        // dd("gdfgdfg");
         $grp = $repgrp->find($data['groupe']);
         $quinc = $repquinc->find($data['quincaillerie']);
         $user->setGroupeId($grp);
@@ -115,6 +114,7 @@ class UserController extends AbstractController
         $user->setTel($data['tel']);
         $emi->persist($user);
         $emi->flush();
+
         return new JsonResponse(['status'=>'User created'], Response::HTTP_CREATED);
     }
      /**
@@ -127,7 +127,6 @@ class UserController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         $user = $rep->find($id);
-        // dd("gdfgdfg");
         $grp = $repgrp->find($data['groupe']);
         $quinc = $repquinc->find($data['quincaillerie']);
         $user->setGroupeId($grp);
