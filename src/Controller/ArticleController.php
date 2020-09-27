@@ -3,30 +3,34 @@
 namespace App\Controller;
 
 use App\Entity\Article;
-use App\Entity\Categorie;
-use App\Entity\Quincaillerie;
 use App\Repository\ArticleRepository;
 use App\Repository\CategorieRepository;
 use App\Repository\QuincaillerieRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ArticlesController extends AbstractController
+class ArticleController extends AbstractController
 {
-     /**
-     * @Route("/article/all", name="article_all", methods={"GET"} )
+    /**
+     * @Route("/article", name="article")
+     */
+    public function index()
+    {
+        return $this->render('article/index.html.twig', [
+            'controller_name' => 'ArticleController',
+        ]);
+    }
+
+    /**
+     * @Route("/art/all", name="art_all",methods={"GET"})
      * @param Requeste $requeste
      * @return JsonResponse     
      */
-    public function gatAll(QuincaillerieRepository $repquinc,CategorieRepository $repcat,
+    public function getAll(QuincaillerieRepository $repquinc,CategorieRepository $repcat,
                             ArticleRepository $rep)
     {
         $data = $rep->findAll();
@@ -63,7 +67,7 @@ class ArticlesController extends AbstractController
         return new JsonResponse($dataclection);
     }
      /**
-     * @Route("/article/{id<[0-9]+>}", name="article_one", methods={"GET"} )
+     * @Route("/art/{id<[0-9]+>}", name="art_one", methods={"GET"} )
      * @param Requeste $requeste
      * @return JsonResponse     
      */
@@ -101,18 +105,19 @@ class ArticlesController extends AbstractController
         return new JsonResponse($dataclection);
     }
      /**
-     * @Route("/article/add", name="article_add", methods={"POST"} )
+     * @Route("/art/add", name="art_add", methods={"POST"} )
      * @param Requeste $requeste
      * @return JsonResponse     
      */
     public function add(QuincaillerieRepository $repquinc,CategorieRepository $repcat,
                             ArticleRepository $rep,Request $request,
-                                EntityManager $emi) : JsonResponse
+                                EntityManagerInterface $emi) : JsonResponse
     {
+        // dd("add");
         $data = json_decode($request->getContent(), true);
 
         $article = new Article;
-        $quincaillerie = $repquinc->find($data['qincaillerie']);
+        $quincaillerie = $repquinc->find($data['quincaillerie']);
         $categorie = $repcat->find($data['categorie']);
         $article->setLibelle($data['libelle']);
         $article->setPrixencours($data['prixencours']);
@@ -126,18 +131,19 @@ class ArticlesController extends AbstractController
         return new JsonResponse(['status'=>'Article created'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/article/update/{id<[0-9]+>}", name="article_update", methods={"PUT"} )
+     * @Route("/art/update/{id<[0-9]+>}", name="art_update", methods={"PUT"} )
      * @param Requeste $requeste
      * @return JsonResponse     
      */
     public function update(QuincaillerieRepository $repquinc,CategorieRepository $repcat,
                             ArticleRepository $rep,Request $request,
-                                EntityManager $emi, int $id) : JsonResponse
+                                EntityManagerInterface $emi, int $id) : JsonResponse
     {
+        // dd("update");
         $data = json_decode($request->getContent(), true);
 
         $article = $rep->find($id);
-        $quincaillerie = $repquinc->find($data['qincaillerie']);
+        $quincaillerie = $repquinc->find($data['quincaillerie']);
         $categorie = $repcat->find($data['categorie']);
         $article->setLibelle($data['libelle']);
         $article->setPrixencours($data['prixencours']);
@@ -151,14 +157,15 @@ class ArticlesController extends AbstractController
         return new JsonResponse(['status'=>'Article mise en jour success'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/article/delete/{id<[0-9]+>}", name="article_delete", methods={"DELETE"} )
+     * @Route("/art/delete/{id<[0-9]+>}", name="art_delete", methods={"DELETE"} )
      * @param Requeste $requeste
      * @return JsonResponse
      */
     public function delete(QuincaillerieRepository $repquinc,CategorieRepository $repcat,
                             ArticleRepository $rep,Request $request,
-                                EntityManager $emi, $id) : JsonResponse
+                                EntityManagerInterface $emi, int $id) : JsonResponse
     {
+        // dd("delete");
         $data = json_decode($request->getContent(), true);
 
         $article = $rep->find($id);
@@ -166,5 +173,4 @@ class ArticlesController extends AbstractController
         $emi->flush();
         return new JsonResponse(['status'=>'Article supprimer'], Response::HTTP_CREATED);
     }
-
 }

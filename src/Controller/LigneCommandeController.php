@@ -158,7 +158,7 @@ class LigneCommandeController extends AbstractController
         return new JsonResponse(['status'=>'Lignecommande created'], Response::HTTP_CREATED);
     }
     /**
-     * @Route("/ligne/commande/update<[0-9]+>", name="ligne_commande_update",methods={"PUT"})
+     * @Route("/ligne/commande/update/{id<[0-9]+>}", name="ligne_commande_update",methods={"PUT"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -182,7 +182,7 @@ class LigneCommandeController extends AbstractController
         return new JsonResponse(['status'=>'Lignecommande mise a jour'], Response::HTTP_CREATED);
     }
     /**
-     * @Route("/ligne/commande/delete", name="ligne_commande_delete",methods={"DELETE"})
+     * @Route("/ligne/commande/delete/{id<[0-9]+>}", name="ligne_commande_delete",methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse
      */

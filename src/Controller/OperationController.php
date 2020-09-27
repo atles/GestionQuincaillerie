@@ -296,7 +296,7 @@ class OperationController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/operation/delete/{id<[0-9]+>}", name="operation_delete", methods={"GET"})
+     * @Route("/operation/delete/{id<[0-9]+>}", name="operation_delete", methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
