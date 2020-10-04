@@ -106,4 +106,17 @@ class CommandeController extends AbstractController
         $emi->flush();
         return new JsonResponse(['status'=>'Commande delete'], Response::HTTP_CREATED);
     }
+    /**
+     * @Route("/commande/clone/{id<[0-9]+>}", name="commande_clone",methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner(int $id,CommandeRepository $rep, EntityManagerInterface $emi) : JsonResponse{
+
+        $commande = $rep->find($id);
+        $commandeclone = clone $commande;
+        $emi->persist($commandeclone);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Commande clone'], Response::HTTP_CREATED);
+    }
 }

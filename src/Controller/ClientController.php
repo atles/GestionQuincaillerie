@@ -188,4 +188,20 @@ class ClientController extends AbstractController
 
         return new JsonResponse(['status'=>'Client supprimer'], Response::HTTP_CREATED);
     }
+    /**
+     * @Route("/client/clone/{id<[0-9]+>}", name="client_clone", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner(QuincaillerieRepository $repquinc, GroupeRepository $repgrp,
+                            UserRepository $repuser,ClientRepository $rep,
+                            EntityManagerInterface $emi,int $id) : JsonResponse{
+
+        $client = $rep->find($id);
+        $clientclone = clone $client;
+        $emi->persist($clientclone);
+        $emi->flush();
+
+        return new JsonResponse(['status'=>'Client cloner avec success'], Response::HTTP_CREATED);
+    }
 }

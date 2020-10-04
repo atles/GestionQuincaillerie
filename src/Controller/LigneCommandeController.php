@@ -148,7 +148,7 @@ class LigneCommandeController extends AbstractController
         $ligncommande = new Lignecommande;
         $ligncommande->setPu($data['pu']);
         $ligncommande->setQte($data['qte']);
-        $ligncommande->setUnit($data['unit']);
+        $ligncommande->setUnit($data['unite']);
         $commande = $repcom->find($data['commande']);
         $article = $repart->find($data['article']);
         $ligncommande->setCommande($commande);
@@ -172,7 +172,7 @@ class LigneCommandeController extends AbstractController
         $ligncommande = $rep->find($id);
         $ligncommande->setPu($data['pu']);
         $ligncommande->setQte($data['qte']);
-        $ligncommande->setUnit($data['unit']);
+        $ligncommande->setUnit($data['unite']);
         $commande = $repcom->find($data['commande']);
         $article = $repart->find($data['article']);
         $ligncommande->setCommande($commande);
@@ -194,5 +194,20 @@ class LigneCommandeController extends AbstractController
         $emi->remove($lignecommande);
         $emi->flush();
         return new JsonResponse(['status'=>'Lignecommande supprimer'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/ligne/commande/clone/{id<[0-9]+>}", name="ligne_commande_clone",methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner(EntityManagerInterface $emi,CommandeRepository $repcom,
+                            QuincaillerieRepository $repquinc,CategorieRepository $repcat, 
+                                ArticleRepository $repart,int $id, LignecommandeRepository $rep) : JsonResponse
+    {
+        $lignecommande = $rep->find($id);
+        $lignecommandeclone = clone $lignecommande;
+        $emi->persist($lignecommandeclone);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Lignecommande cloner'], Response::HTTP_CREATED);
     }
 }

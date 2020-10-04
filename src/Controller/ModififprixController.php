@@ -195,4 +195,19 @@ class ModififprixController extends AbstractController
         $emi->flush();
         return new JsonResponse(['status'=>'Suppression de '.$modifprix->getid()], Response::HTTP_CREATED);
     }
+     /**
+     * @Route("/modifprix/clone/{id<[0-9]+>}", name="modifprix_clone", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner(Request $request,int $id,QuincaillerieRepository $repquinc,CategorieRepository $repcat,
+                           ArticleRepository $repArt,EntityManagerInterface $emi,
+                           ModifprixRepository $rep)
+    {
+        $modifprix = $rep->find($id);
+        $modifprixclone = clone $modifprix;
+        $emi->persist($modifprixclone);
+        $emi->flush();
+        return new JsonResponse(['status'=>'clonage de '.$modifprix->getid()], Response::HTTP_CREATED);
+    }
 }

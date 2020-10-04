@@ -93,5 +93,18 @@ class GroupeController extends AbstractController
         $emi->flush();
         return new JsonResponse(['status'=>'Groupe supprimer'], Response::HTTP_CREATED);
     }
+    /**
+     * @Route("/groupe/clone/{id<[0-9]+>}", name="groupe_clone", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner(int $id,EntityManagerInterface $emi, GroupeRepository $rep) : JsonResponse {
+
+        $groupe = $rep->find($id);
+        $groupeclone = clone $groupe;
+        $emi->persist($groupeclone);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Groupe cloner'], Response::HTTP_CREATED);
+    }
 
 }

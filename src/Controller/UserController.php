@@ -37,7 +37,8 @@ class UserController extends AbstractController
         foreach($data as $item){
             $dataclection[] = array(
                 'id' => $item->getId(),
-                'email' => $item->getUser(),
+                'email' => $item->getEmail(),
+                'user' => $item->getUser(),
                 'tel' => $item->getTel(),
                 'quincaillerie_id' => array(
                     'id'=>$item->getQuincaillerieId()->getId(),
@@ -72,7 +73,8 @@ class UserController extends AbstractController
         $data = $rep->find($id);
         $dataclection = array(
             'id' => $data->getId(),
-            'email' => $data->getUser(),
+            'email' => $data->getEmail(),
+            'user' => $data->getUser(),
             'tel' => $data->getTel(),
             'quincaillerie_id' => array(
                 'id'=>$data->getQuincaillerieId()->getId(),
@@ -147,9 +149,22 @@ class UserController extends AbstractController
                            GroupeRepository $repgrp,Request $request,UserRepository $rep)
     {
         $user = $rep->find($id);
-        dd($user);
         $emi->remove($user);
         $emi->flush();
         return new JsonResponse(['status'=>'Suppression de '.$user->getid()], Response::HTTP_CREATED);
+    }
+     /**
+     * @Route("/user/clone/{id<[0-9]+>}", name="user_clone", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner(int $id,EntityManagerInterface $emi,QuincaillerieRepository $repquinc,
+                           GroupeRepository $repgrp,Request $request,UserRepository $rep)
+    {
+        $user = $rep->find($id);
+        $userclone = clone $user;
+        $emi->persist($userclone);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Clonage de '.$user->getid()], Response::HTTP_CREATED);
     }
 }

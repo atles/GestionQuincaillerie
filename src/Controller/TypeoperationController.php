@@ -102,5 +102,19 @@ class TypeoperationController extends AbstractController
         $emi->flush();
         return new JsonResponse(['status'=>'Suppression de '.$typeOp->getid()], Response::HTTP_CREATED);
     }
+     /**
+     * @Route("/typeoperation/clone/{id<[0-9]+>}", name="typeoperation_clone", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner( Request $request,EntityManagerInterface $emi,
+                            TypeoperationRepository $rep,int $id)
+    {
+        $typeOp = $rep->find($id);
+        $typeOpclone = clone $typeOp;
+        $emi->persist($typeOpclone);
+        $emi->flush();
+        return new JsonResponse(['status'=>'Clonage de '.$typeOp->getid()], Response::HTTP_CREATED);
+    }
 
 }

@@ -122,4 +122,17 @@ class CategorieController extends AbstractController
         $emi->flush();
         return new JsonResponse(['status'=>'categorie supprimer'], Response::HTTP_CREATED);
     }
+    /**
+     * @Route("/categorie/clone/{id<[0-9]+>}", name="article_clone", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function cloner(CategorieRepository $rep,EntityManagerInterface $emi, int $id):JsonResponse{
+       
+        $categorie = $rep->find($id);
+        $categorieclone = clone $categorie;
+        $emi->persist($categorieclone);
+        $emi->flush();
+        return new JsonResponse(['status'=>'categorie cloner avec success'], Response::HTTP_CREATED);
+    }
 }
