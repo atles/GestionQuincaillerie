@@ -299,6 +299,26 @@ class OperationController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
+     * @Route("/operation/deletes", name="operation_deletes", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes( QuincaillerieRepository $repquin,GroupeRepository $repgrp,
+                            UserRepository $repuser,CategorieRepository $repcat,
+                            ArticleRepository $repArt,CommandeRepository $repcom,
+                            LignecommandeRepository $replign,TypeoperationRepository $reptype,
+                            ClientRepository $repcli,EntityManagerInterface $emi,
+                            OperationRepository $rep, Request $request):JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $operation = $rep->find($id);
+            $emi->remove($operation);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Suppressions des operations'], Response::HTTP_CREATED);
+    }
+     /**
      * @Route("/operation/delete/{id<[0-9]+>}", name="operation_delete", methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse
@@ -308,7 +328,7 @@ class OperationController extends AbstractController
                             ArticleRepository $repArt,CommandeRepository $repcom,
                             LignecommandeRepository $replign,TypeoperationRepository $reptype,
                             ClientRepository $repcli,EntityManagerInterface $emi,
-                            int $id,OperationRepository $rep, Request $request)
+                            int $id,OperationRepository $rep):JsonResponse
     {
         $operation = $rep->find($id);
         // dd($operation);

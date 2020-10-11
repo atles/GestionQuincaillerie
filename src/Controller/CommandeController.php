@@ -95,6 +95,20 @@ class CommandeController extends AbstractController
         return new JsonResponse(['status'=>'Commande mise a jour'], Response::HTTP_CREATED);
     }
     /**
+     * @Route("/commande/deletes", name="commande_deletes",methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(Request $request,CommandeRepository $rep, EntityManagerInterface $emi) : JsonResponse{
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $commande = $rep->find($id);
+            $emi->remove($commande);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Commandes delete'], Response::HTTP_CREATED);
+    }
+    /**
      * @Route("/commande/delete/{id<[0-9]+>}", name="commande_delete",methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse

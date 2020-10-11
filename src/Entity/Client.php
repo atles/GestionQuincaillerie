@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\ClientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=ClientRepository::class)
+ * @Vich\Uploadable
  */
 class Client
 {
@@ -16,6 +18,12 @@ class Client
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @Vich\UploadableField(mapping="property_image", fileNameProperty="photo")
+     * @var File|null
+     */
+    private $imageFile;
 
     /**
      * @ORM\Column(type="string", length=45)
@@ -54,6 +62,7 @@ class Client
 
     /**
      * @ORM\Column(type="string", length=45, nullable=true)
+     * @var string|null
      */
     private $photo;
 
@@ -206,6 +215,30 @@ class Client
     public function setUser(?user $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of imageFile
+     *
+     * @return  File|null
+     */ 
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * Set the value of imageFile
+     *
+     * @param  File|null  $imageFile
+     *
+     * @return  self
+     */ 
+    public function setImageFile($imageFile)
+    {
+        $this->imageFile = $imageFile;
 
         return $this;
     }

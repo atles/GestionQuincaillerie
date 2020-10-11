@@ -157,6 +157,24 @@ class ArticleController extends AbstractController
         return new JsonResponse(['status'=>'Article mise en jour success'], Response::HTTP_CREATED);
     }
      /**
+     * @Route("/art/deletes", name="art_deletes", methods={"DELETE"} )
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(QuincaillerieRepository $repquinc,CategorieRepository $repcat,
+                            ArticleRepository $rep,Request $request,
+                                EntityManagerInterface $emi) : JsonResponse
+    {
+        // dd("delete");
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $article = $rep->find($id);
+            $emi -> remove($article);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Articles supprimer'], Response::HTTP_CREATED);
+    }
+     /**
      * @Route("/art/delete/{id<[0-9]+>}", name="art_delete", methods={"DELETE"} )
      * @param Requeste $requeste
      * @return JsonResponse

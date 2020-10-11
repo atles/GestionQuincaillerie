@@ -181,6 +181,23 @@ class ModififprixController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
+     * @Route("/modifprix/deletes", name="modifprix_deletes", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(Request $request,QuincaillerieRepository $repquinc,CategorieRepository $repcat,
+                           ArticleRepository $repArt,EntityManagerInterface $emi,
+                           ModifprixRepository $rep)
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $modifprix = $rep->find($id);
+            $emi->remove($modifprix);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Suppressions de modifPrix'], Response::HTTP_CREATED);
+    }
+     /**
      * @Route("/modifprix/delete/{id<[0-9]+>}", name="modifprix_delete", methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse

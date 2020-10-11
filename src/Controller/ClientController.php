@@ -9,20 +9,61 @@ use App\Repository\QuincaillerieRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ClientController extends AbstractController
 {
     /**
      * @Route("/client", name="client")
      */
-    public function index()
+    public function index(EntityManagerInterface $emi, Request $request, QuincaillerieRepository $repquinc,
+                            GroupeRepository $repgrp, UserRepository $repuser)
     {
+        $form = $this->createFormBuilder()
+            ->add("typeclient",TextType::class)
+            ->add("prenom",TextType::class)
+            ->add("nom",TextType::class)
+            ->add("adresse",TextType::class)
+            ->add("email",EmailType::class)
+            ->add("tel",TextType::class)
+            ->add("acompte",NumberType::class)
+            ->add("imageFile",FileType::class)
+            ->add("profession",TextType::class)
+            ->add("solde",NumberType::class)
+            ->add("user",NumberType::class)
+            ->getForm()
+        ;
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            // dd($form->getData());
+            $client = new Client;
+            $client->setTypeclient($form->getData()['typeclient']);
+            $client->setPrenom($form->getData()['prenom']);
+            $client->setNom($form->getData()['nom']);
+            $client->setAdresse($form->getData()['adresse']);
+            $client->setEmail($form->getData()['email']);
+            $client->setTel($form->getData()['tel']);
+            $client->setAcompte($form->getData()['acompte']);
+            $client->setImageFile($form->getData()['imageFile']);
+            $client->setProfession($form->getData()['profession']);
+            $client->setSolde($form->getData()['solde']);
+            $client->setUser($repuser->find($form->getData()['user']));
+            $emi->persist($client);
+            $emi->flush();
+        }
         return $this->render('client/index.html.twig', [
             'controller_name' => 'ClientController',
+            'formulaire' => $form->createView(),
         ]);
     }
     /**
@@ -121,15 +162,23 @@ class ClientController extends AbstractController
         return new JsonResponse($dataclection);
     }
     /**
-     * @Route("/client/add", name="client_add", methods={"POST"})
+     * @Route("/client/add", name="client_add", methods={"POST","GET"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
     public function add(QuincaillerieRepository $repquinc, GroupeRepository $repgrp,
                             UserRepository $repuser,ClientRepository $rep, Request $request,
-                            EntityManagerInterface $emi) : JsonResponse{
+                            EntityManagerInterface $emi, SluggerInterface $slugger) : JsonResponse{
+        // $folderPath="upload/";
+        // $file_tmp = $_FILES['imageFile']['tmp_name'];
+        // $file_ext = strtolower(end(explode('.',$_FILES['imageFile']['name'])));
+        // $file = $folderPath.uniqid().'.'.$file_ext;
+        // move_uploaded_file($file_tmp, $file);
+
         $data = json_decode($request->getContent(), true);
         $client = new Client;
+        // $img = file_get_contents($request->files->get('photo'));
+        // dd($data['user']);
         $user = $repuser->find($data['user']);
         $client->setTypeclient($data['typeclient']);
         $client->setPrenom($data['prenom']);
@@ -138,13 +187,14 @@ class ClientController extends AbstractController
         $client->setEmail($data['email']);
         $client->setTel($data['tel']);
         $client->setAcompte($data['acompte']);
+        // $client->setImageFile($data['photo']);
         $client->setPhoto($data['photo']);
         $client->setProfession($data['profession']);
         $client->setSolde($data['solde']);
         $client->setUser($user);
         $emi->persist($client);
         $emi->flush();
-        return new JsonResponse(['status'=>'Client created'], Response::HTTP_CREATED);
+        return new JsonResponse(['status'=>'success'], Response::HTTP_CREATED);
     }
     
     /**
@@ -187,6 +237,24 @@ class ClientController extends AbstractController
         $emi->flush();
 
         return new JsonResponse(['status'=>'Client supprimer'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/client/deletes", name="client_deletes", methods={"DELETE","GET"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(QuincaillerieRepository $repquinc, GroupeRepository $repgrp,
+                            UserRepository $repuser,ClientRepository $rep,
+                            EntityManagerInterface $emi,Request $request) : JsonResponse{
+
+        $data = json_decode($request->getContent(),true);
+        // $ids = [14,15,16,17];
+        foreach($data as $id){
+            $client = $rep->find($id);
+            $emi->remove($client);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Clients supprimer'], Response::HTTP_CREATED);
     }
     /**
      * @Route("/client/clone/{id<[0-9]+>}", name="client_clone", methods={"POST"})

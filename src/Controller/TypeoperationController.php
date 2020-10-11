@@ -89,6 +89,22 @@ class TypeoperationController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
+     * @Route("/typeoperation/deletes", name="typeoperation_deletes", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes( Request $request,EntityManagerInterface $emi,
+                            TypeoperationRepository $rep):JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $typeOp = $rep->find($id);
+            $emi->remove($typeOp);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Suppression des typeOperations'], Response::HTTP_CREATED);
+    }
+     /**
      * @Route("/typeoperation/delete/{id<[0-9]+>}", name="typeoperation_delete", methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse

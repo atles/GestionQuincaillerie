@@ -111,6 +111,21 @@ class CategorieController extends AbstractController
         return new JsonResponse(['status'=>'Categorie modifier'], Response::HTTP_CREATED);
     }
     /**
+     * @Route("/categorie/deletes", name="article_deletes", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(CategorieRepository $rep,EntityManagerInterface $emi,Request $request):JsonResponse{
+       
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = $rep->find($id);
+            $emi->remove($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'categories supprimer'], Response::HTTP_CREATED);
+    }
+    /**
      * @Route("/categorie/delete/{id<[0-9]+>}", name="article_delete", methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse

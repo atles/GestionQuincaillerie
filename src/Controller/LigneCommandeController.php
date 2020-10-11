@@ -182,6 +182,24 @@ class LigneCommandeController extends AbstractController
         return new JsonResponse(['status'=>'Lignecommande mise a jour'], Response::HTTP_CREATED);
     }
     /**
+     * @Route("/ligne/commande/deletes", name="ligne_commande_deletes",methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(EntityManagerInterface $emi,CommandeRepository $repcom,
+                            QuincaillerieRepository $repquinc,CategorieRepository $repcat, 
+                                ArticleRepository $repart,int $id, LignecommandeRepository $rep,
+                                    Request $request) : JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $lignecommande = $rep->find($id);
+            $emi->remove($lignecommande);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Lignecommandes supprimer'], Response::HTTP_CREATED);
+    }
+    /**
      * @Route("/ligne/commande/delete/{id<[0-9]+>}", name="ligne_commande_delete",methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse

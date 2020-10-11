@@ -82,6 +82,20 @@ class GroupeController extends AbstractController
         return new JsonResponse(['status'=>'Groupe mise en jour'], Response::HTTP_CREATED);
     }
     /**
+     * @Route("/groupe/deletes", name="groupe_deletes", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(Request $request,EntityManagerInterface $emi, GroupeRepository $rep) : JsonResponse {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $groupe = $rep->find($id);
+            $emi->remove($groupe);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Groupes supprimer'], Response::HTTP_CREATED);
+    }
+    /**
      * @Route("/groupe/delete/{id<[0-9]+>}", name="groupe_delete", methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse

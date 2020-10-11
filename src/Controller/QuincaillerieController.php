@@ -115,6 +115,21 @@ class QuincaillerieController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
+     * @Route("/quincaillerie/deletes", name="quincaillerie_deletes", methods={"DELETE"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function deletes(Request $request,QuincaillerieRepository $rep,EntityManagerInterface $emi):JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $quincaillerie = $rep->find($id);
+            $emi->remove($quincaillerie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Suppression des quincailleries'], Response::HTTP_CREATED);
+    }
+     /**
      * @Route("/quincaillerie/delete/{id<[0-9]+>}", name="quincaillerie_delete", methods={"DELETE"})
      * @param Requeste $requeste
      * @return JsonResponse
