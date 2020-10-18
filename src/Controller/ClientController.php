@@ -239,7 +239,7 @@ class ClientController extends AbstractController
         return new JsonResponse(['status'=>'Client supprimer'], Response::HTTP_CREATED);
     }
     /**
-     * @Route("/client/deletes", name="client_deletes", methods={"DELETE","GET"})
+     * @Route("/client/deletes", name="client_deletes", methods={"PATCH"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -255,6 +255,23 @@ class ClientController extends AbstractController
         }
         $emi->flush();
         return new JsonResponse(['status'=>'Clients supprimer'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/client/clones", name="client_clones", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones(QuincaillerieRepository $repquinc, GroupeRepository $repgrp,
+                            UserRepository $repuser,ClientRepository $rep,
+                            EntityManagerInterface $emi,Request $request) : JsonResponse{
+
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = clone $rep->find($id);
+            $emi->persist($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Client cloner avec success'], Response::HTTP_CREATED);
     }
     /**
      * @Route("/client/clone/{id<[0-9]+>}", name="client_clone", methods={"POST"})

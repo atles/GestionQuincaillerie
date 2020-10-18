@@ -182,13 +182,13 @@ class LigneCommandeController extends AbstractController
         return new JsonResponse(['status'=>'Lignecommande mise a jour'], Response::HTTP_CREATED);
     }
     /**
-     * @Route("/ligne/commande/deletes", name="ligne_commande_deletes",methods={"DELETE"})
+     * @Route("/ligne/commande/deletes", name="ligne_commande_deletes",methods={"PATCH"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
     public function deletes(EntityManagerInterface $emi,CommandeRepository $repcom,
                             QuincaillerieRepository $repquinc,CategorieRepository $repcat, 
-                                ArticleRepository $repart,int $id, LignecommandeRepository $rep,
+                                ArticleRepository $repart, LignecommandeRepository $rep,
                                     Request $request) : JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -212,6 +212,23 @@ class LigneCommandeController extends AbstractController
         $emi->remove($lignecommande);
         $emi->flush();
         return new JsonResponse(['status'=>'Lignecommande supprimer'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/ligne/commande/clones", name="ligne_commande_clones",methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones(EntityManagerInterface $emi,CommandeRepository $repcom,
+                            QuincaillerieRepository $repquinc,CategorieRepository $repcat, 
+                                ArticleRepository $repart, LignecommandeRepository $rep,Request $request) : JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = clone $rep->find($id);
+            $emi->persist($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Lignecommandes cloner'], Response::HTTP_CREATED);
     }
     /**
      * @Route("/ligne/commande/clone/{id<[0-9]+>}", name="ligne_commande_clone",methods={"POST"})

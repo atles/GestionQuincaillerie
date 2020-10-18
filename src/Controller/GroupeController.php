@@ -82,7 +82,7 @@ class GroupeController extends AbstractController
         return new JsonResponse(['status'=>'Groupe mise en jour'], Response::HTTP_CREATED);
     }
     /**
-     * @Route("/groupe/deletes", name="groupe_deletes", methods={"DELETE"})
+     * @Route("/groupe/deletes", name="groupe_deletes", methods={"PATCH"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -106,6 +106,21 @@ class GroupeController extends AbstractController
         $emi->remove($groupe);
         $emi->flush();
         return new JsonResponse(['status'=>'Groupe supprimer'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/groupe/clones", name="groupe_clones", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones(Request $request,EntityManagerInterface $emi, GroupeRepository $rep) : JsonResponse {
+
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = clone $rep->find($id);
+            $emi->persist($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Groupe cloner'], Response::HTTP_CREATED);
     }
     /**
      * @Route("/groupe/clone/{id<[0-9]+>}", name="groupe_clone", methods={"POST"})

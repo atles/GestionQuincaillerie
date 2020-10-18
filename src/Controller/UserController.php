@@ -141,7 +141,7 @@ class UserController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/user/deletes", name="user_deletes", methods={"DELETE"})
+     * @Route("/user/deletes", name="user_deletes", methods={"PATCH"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -168,6 +168,22 @@ class UserController extends AbstractController
         $emi->remove($user);
         $emi->flush();
         return new JsonResponse(['status'=>'Suppression de '.$user->getid()], Response::HTTP_CREATED);
+    }
+     /**
+     * @Route("/user/clone/{id<[0-9]+>}", name="user_clone", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones(EntityManagerInterface $emi,QuincaillerieRepository $repquinc,
+                           GroupeRepository $repgrp,Request $request,UserRepository $rep)
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = clone $rep->find($id);
+            $emi->persist($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'Clonage de reussi'], Response::HTTP_CREATED);
     }
      /**
      * @Route("/user/clone/{id<[0-9]+>}", name="user_clone", methods={"POST"})

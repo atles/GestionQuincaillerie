@@ -181,7 +181,7 @@ class ModififprixController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/modifprix/deletes", name="modifprix_deletes", methods={"DELETE"})
+     * @Route("/modifprix/deletes", name="modifprix_deletes", methods={"PATCH"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -211,6 +211,23 @@ class ModififprixController extends AbstractController
         $emi->remove($modifprix);
         $emi->flush();
         return new JsonResponse(['status'=>'Suppression de '.$modifprix->getid()], Response::HTTP_CREATED);
+    }
+     /**
+     * @Route("/modifprix/clones", name="modifprix_clones", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones(Request $request,QuincaillerieRepository $repquinc,CategorieRepository $repcat,
+                           ArticleRepository $repArt,EntityManagerInterface $emi,
+                           ModifprixRepository $rep)
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = clone $rep->find($id);
+            $emi->persist($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'clonage de reussi'], Response::HTTP_CREATED);
     }
      /**
      * @Route("/modifprix/clone/{id<[0-9]+>}", name="modifprix_clone", methods={"POST"})

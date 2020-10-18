@@ -157,7 +157,7 @@ class ArticleController extends AbstractController
         return new JsonResponse(['status'=>'Article mise en jour success'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/art/deletes", name="art_deletes", methods={"DELETE"} )
+     * @Route("/art/deletes", name="art_deletes", methods={"PATCH"} )
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -190,6 +190,24 @@ class ArticleController extends AbstractController
         $emi -> remove($article);
         $emi->flush();
         return new JsonResponse(['status'=>'Article supprimer'], Response::HTTP_CREATED);
+    }
+    /**
+     * @Route("/art/clones", name="art_clones", methods={"POST"} )
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones(QuincaillerieRepository $repquinc,CategorieRepository $repcat,
+                            ArticleRepository $rep,Request $request,EntityManagerInterface $emi):JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        // dd($data);
+        foreach($data as $id){
+            $article = clone $rep->find($id);
+            $emi ->persist($article);
+        }
+        $emi->flush();
+
+        return new JsonResponse(['status'=>'Articles cloner avec success'], Response::HTTP_CREATED);
     }
     /**
      * @Route("/art/clone/{id<[0-9]+>}", name="art_clone", methods={"POST"} )

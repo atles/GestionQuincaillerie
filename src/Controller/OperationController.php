@@ -299,7 +299,7 @@ class OperationController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/operation/deletes", name="operation_deletes", methods={"DELETE"})
+     * @Route("/operation/deletes", name="operation_deletes", methods={"PATCH"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -335,6 +335,26 @@ class OperationController extends AbstractController
         $emi->remove($operation);
         $emi->flush();
         return new JsonResponse(['status'=>'Suppression de '.$operation->getid()], Response::HTTP_CREATED);
+    }
+     /**
+     * @Route("/operation/clones", name="operation_clones", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones( QuincaillerieRepository $repquin,GroupeRepository $repgrp,
+                            UserRepository $repuser,CategorieRepository $repcat,
+                            ArticleRepository $repArt,CommandeRepository $repcom,
+                            LignecommandeRepository $replign,TypeoperationRepository $reptype,
+                            ClientRepository $repcli,EntityManagerInterface $emi,
+                            OperationRepository $rep, Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = clone $rep->find($id);
+            $emi->persist($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'clonage de reussi'], Response::HTTP_CREATED);
     }
      /**
      * @Route("/operation/clone/{id<[0-9]+>}", name="operation_clone", methods={"POST"})

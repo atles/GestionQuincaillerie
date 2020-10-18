@@ -115,7 +115,7 @@ class QuincaillerieController extends AbstractController
         return new JsonResponse(['status'=>'mise a jour Avec succes'], Response::HTTP_CREATED);
     }
      /**
-     * @Route("/quincaillerie/deletes", name="quincaillerie_deletes", methods={"DELETE"})
+     * @Route("/quincaillerie/deletes", name="quincaillerie_deletes", methods={"PATCH"})
      * @param Requeste $requeste
      * @return JsonResponse
      */
@@ -142,6 +142,22 @@ class QuincaillerieController extends AbstractController
         $emi->remove($quincaillerie);
         $emi->flush();
         return new JsonResponse(['status'=>'Suppression de '.$quincaillerie->getid()], Response::HTTP_CREATED);
+    }
+     /**
+     * @Route("/quincaillerie/clones", name="quincaillerie_clones", methods={"POST"})
+     * @param Requeste $requeste
+     * @return JsonResponse
+     */
+    public function clones(Request $request,QuincaillerieRepository $rep,
+                            EntityManagerInterface $emi)
+    {
+        $data = json_decode($request->getContent(), true);
+        foreach($data as $id){
+            $categorie = clone $rep->find($id);
+            $emi->persist($categorie);
+        }
+        $emi->flush();
+        return new JsonResponse(['status'=>'clonage de reussi'], Response::HTTP_CREATED);
     }
      /**
      * @Route("/quincaillerie/clone/{id<[0-9]+>}", name="quincaillerie_clone", methods={"POST"})
